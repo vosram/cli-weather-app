@@ -12,6 +12,7 @@ from lib.formatters import (
     format_humidity,
     format_wind_speed,
     format_weather_desc,
+    format_percipitation,
 )
 
 load_dotenv()
@@ -89,7 +90,7 @@ def current(
     COORDS should be formatted as '<lat>,<lon>'.
     Latitude and Longitude can be fetched from searchcity command.
     """
-    # TODO: interpret CLI options for query params
+    # Interpret CLI options for query params
     if t_metric != "c" and t_metric != "f":
         print(
             "[bold red]Error:[/bold red] --t-metric should be either 'f' or 'c'. Exiting..."
@@ -118,7 +119,7 @@ def current(
     full_weather_url = f"{OW_API_URL}/data/3.0/onecall"
     full_geoloc_url = f"{OW_API_URL}/geo/1.0/reverse"
 
-    # TODO: Call weather API for current weather & Geolocation API
+    # Call weather API for current weather & Geolocation API
     weather_res = requests.get(full_weather_url, params=weather_call_params)
     if weather_res.status_code != 200:
         print(
@@ -133,7 +134,7 @@ def current(
         )
         raise typer.Exit(1)
 
-    # TODO: Prepare Data for Console output
+    # Prepare Data for Console output
     weather_data = weather_res.json()
     geoloc_data = geoloc_res.json()
 
@@ -155,16 +156,16 @@ def current(
     }
 
     if "rain" in weather_data["current"]:
-        final_data["rain"] = weather_data["current"]["rain"]["1h"]
+        final_data["rain"] = format_percipitation(weather_data["current"]["rain"]["1h"])
 
     if "snow" in weather_data["current"]:
-        final_data["snow"] = weather_data["current"]["snow"]["1h"]
+        final_data["snow"] = format_percipitation(weather_data["current"]["snow"]["1h"])
 
     if "wind_gust" in weather_data["current"]:
         final_data["wind_gust"] = format_wind_speed(
             weather_data["current"]["wind_gust"], w_metric
         )
-
+    # Output of data
     print(
         f"current weather in [green]{final_data["loc_name"]}, {final_data["loc_state"]}, {final_data["loc_country"]}[/green]"
     )
@@ -177,6 +178,10 @@ def current(
     table.add_row("Wind Speed", final_data["windspeed"])
     if final_data["wind_gust"] is not None:
         table.add_row("Wind Gust", final_data["wind_gust"])
+    if final_data["rain"] is not None:
+        table.add_row("Rain", final_data["rain"])
+    if final_data["snow"] is not None:
+        table.add_row("Snow", final_data["snow"])
     console.print(table)
 
 

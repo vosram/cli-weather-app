@@ -31,3 +31,7 @@ def format_humidity(val: int) -> str:
 
 def format_weather_desc(weather):
     return f"{weather["main"]}: {weather["description"]}"
+
+
+def format_percipitation(val: float) -> str:
+    return "{:.2f}mm/h".format(val)
