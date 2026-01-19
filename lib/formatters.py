@@ -27,3 +27,7 @@ def timestamp_to_fmt_text(timestamp: int) -> str:
 
 def format_humidity(val: int) -> str:
     return f"{val}%"
+
+
+def format_weather_desc(weather):
+    return f"{weather["main"]}: {weather["description"]}"

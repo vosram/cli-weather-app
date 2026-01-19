@@ -11,6 +11,7 @@ from lib.formatters import (
     timestamp_to_fmt_text,
     format_humidity,
     format_wind_speed,
+    format_weather_desc,
 )
 
 load_dotenv()
@@ -147,7 +148,8 @@ def current(
         ),
         "humidity": format_humidity(weather_data["current"]["humidity"]),
         "windspeed": format_wind_speed(weather_data["current"]["wind_speed"], w_metric),
-        "weather": weather_data["current"]["weather"][0],
+        "wind_gust": None,
+        "weather": format_weather_desc(weather_data["current"]["weather"][0]),
         "rain": None,
         "snow": None,
     }
@@ -158,15 +160,23 @@ def current(
     if "snow" in weather_data["current"]:
         final_data["snow"] = weather_data["current"]["snow"]["1h"]
 
+    if "wind_gust" in weather_data["current"]:
+        final_data["wind_gust"] = format_wind_speed(
+            weather_data["current"]["wind_gust"], w_metric
+        )
+
     print(
         f"current weather in [green]{final_data["loc_name"]}, {final_data["loc_state"]}, {final_data["loc_country"]}[/green]"
     )
     print(f"\n{final_data["currenttime"]}")
+    print(final_data["weather"])
     table = Table("Measurement", "Value")
     table.add_row("Temp", final_data["temp"])
     table.add_row("Feels like", final_data["feels_like"])
     table.add_row("Humidity", final_data["humidity"])
     table.add_row("Wind Speed", final_data["windspeed"])
+    if final_data["wind_gust"] is not None:
+        table.add_row("Wind Gust", final_data["wind_gust"])
     console.print(table)
 
 
