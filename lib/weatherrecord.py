@@ -71,6 +71,12 @@ class WeatherRecord:
         else:
             return wind_speed_to_mph(self.wind_speed)
 
+    def has_wind_gust(self):
+        if self.wind_gust:
+            return True
+        else:
+            return False
+
     def get_wind_gust(self):
         if self.wind_gust is None:
             return "N/A"
