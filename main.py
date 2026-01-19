@@ -139,50 +139,52 @@ def current(
     weather_data = weather_res.json()
     geoloc_data = geoloc_res.json()
 
-    final_data = {
-        "loc_name": geoloc_data[0]["name"],
-        "loc_state": geoloc_data[0]["state"],
-        "loc_country": geoloc_data[0]["country"],
-        "currenttime": timestamp_to_fmt_text(weather_data["current"]["dt"]),
-        "temp": kelvin_to_formatted(weather_data["current"]["temp"], t_metric),
-        "feels_like": kelvin_to_formatted(
-            weather_data["current"]["feels_like"], t_metric
-        ),
-        "humidity": format_humidity(weather_data["current"]["humidity"]),
-        "windspeed": format_wind_speed(weather_data["current"]["wind_speed"], w_metric),
-        "wind_gust": None,
-        "weather": format_weather_desc(weather_data["current"]["weather"][0]),
-        "rain": None,
-        "snow": None,
-    }
+    wind_gust = None
+    rain = None
+    snow = None
+    pop = None
 
     if "rain" in weather_data["current"]:
-        final_data["rain"] = format_percipitation(weather_data["current"]["rain"]["1h"])
+        rain = weather_data["current"]["rain"]["1h"]
 
     if "snow" in weather_data["current"]:
-        final_data["snow"] = format_percipitation(weather_data["current"]["snow"]["1h"])
+        snow = weather_data["current"]["snow"]["1h"]
 
     if "wind_gust" in weather_data["current"]:
-        final_data["wind_gust"] = format_wind_speed(
-            weather_data["current"]["wind_gust"], w_metric
-        )
+        wind_gust = weather_data["current"]["wind_gust"], w_metric
+
+    w_record = WeatherRecord(
+        weather_data["current"]["dt"],
+        weather_data["current"]["temp"],
+        weather_data["current"]["feels_like"],
+        weather_data["current"]["humidity"],
+        weather_data["current"]["wind_speed"],
+        weather_data["current"]["weather"][0],
+        wind_gust=wind_gust,
+        rain=rain,
+        snow=snow,
+        pop=pop,
+        temp_units=t_metric,
+        wind_units=w_metric,
+    )
+
     # Output of data
     print(
-        f"current weather in [green]{final_data["loc_name"]}, {final_data["loc_state"]}, {final_data["loc_country"]}[/green]"
+        f"Current weather in [green]{geoloc_data[0]["name"]}, {geoloc_data[0]["state"]}, {geoloc_data[0]["country"]}[/green]"
     )
-    print(f"\n{final_data["currenttime"]}")
-    print(final_data["weather"])
+    print(f"\n{w_record.get_datetime("current")}")
+    print(w_record.get_weather_condition())
     table = Table("Measurement", "Value")
-    table.add_row("Temp", final_data["temp"])
-    table.add_row("Feels like", final_data["feels_like"])
-    table.add_row("Humidity", final_data["humidity"])
-    table.add_row("Wind Speed", final_data["windspeed"])
-    if final_data["wind_gust"] is not None:
-        table.add_row("Wind Gust", final_data["wind_gust"])
-    if final_data["rain"] is not None:
-        table.add_row("Rain", final_data["rain"])
-    if final_data["snow"] is not None:
-        table.add_row("Snow", final_data["snow"])
+    table.add_row("Temp", w_record.get_temp())
+    table.add_row("Feels like", w_record.get_feels_like())
+    table.add_row("Humidity", w_record.get_humidity())
+    table.add_row("Wind Speed", w_record.get_wind_speed())
+    if w_record.has_wind_gust():
+        table.add_row("Wind Gust", w_record.get_wind_gust())
+    if w_record.has_rain():
+        table.add_row("Rain", w_record.get_rain())
+    if w_record.has_snow():
+        table.add_row("Snow", w_record.get_snow())
     console.print(table)
 
 
