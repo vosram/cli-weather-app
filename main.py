@@ -315,8 +315,7 @@ def _12hours(
         "snow",
         "pop",
     )
-    for i in range(12):
-        record = hourly_records[i]
+    for record in hourly_records:
         table.add_row(
             record.get_datetime("hourly"),
             record.get_temp(),
