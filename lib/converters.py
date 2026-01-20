@@ -16,3 +16,8 @@ def wind_speed_to_kmph(speed: float) -> str:
 def wind_speed_to_mph(speed: float) -> str:
     result = speed * 2.2369362921
     return "{:.2f} mi/h".format(result)
+
+
+def mm_to_in(mm_val: float) -> str:
+    result = mm_val * 0.0393700787
+    return "{:.2f} in".format(result)

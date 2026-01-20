@@ -14,7 +14,7 @@ from lib.formatters import (
     format_weather_desc,
     format_percipitation,
 )
-from lib.weatherrecord import WeatherRecord
+from lib.weatherrecord import WeatherRecord, DailyWeatherRecord
 
 load_dotenv()
 OW_API_KEY = os.environ.get("OPEN_WEATHER_MAP_API_KEY", "")
@@ -472,6 +472,137 @@ def _24hours(
             record.get_pop(),
         )
     console.print(table)
+
+
+@app.command("8days")
+def _8days(
+    coords: Annotated[
+        str,
+        typer.Argument(help="<lat>,<lon>"),
+    ],
+    t_metric: Annotated[
+        str,
+        typer.Option(
+            "--t-metric",
+            "-t",
+            help="'c' for Celcius 'f' for Fahrenheit.",
+            show_default="Fahrenheit",
+        ),
+    ] = "f",
+    w_metric: Annotated[
+        str,
+        typer.Option(
+            "--w-metric",
+            "-w",
+            help="'m' for mph. 'k' for kmph.",
+            show_default="mph",
+        ),
+    ] = "m",
+):
+    """
+    Gets the next 8 days forecast for the location at COORDS.
+
+    COORDS should be formatted as '<lat>,<lon>'.
+    Latitude and Longitude can be fetched from searchcity command.
+    """
+    # Interpret CLI options for query params
+    if t_metric != "c" and t_metric != "f":
+        print(
+            "[bold red]Error:[/bold red] --t-metric should be either 'f' or 'c'. Exiting..."
+        )
+        raise typer.Exit(1)
+
+    if w_metric != "m" and w_metric != "k":
+        print(
+            "[bold red]Error:[/bold red] --w-metric should be either 'm' or 'k'. Exiting..."
+        )
+        raise typer.Exit(1)
+
+    parsed_coords = coords.split(",")
+    weather_call_params = {
+        "appid": OW_API_KEY,
+        "exclude": "current,minutely,hourly,alerts",
+        "lat": parsed_coords[0],
+        "lon": parsed_coords[1],
+    }
+    geo_call_params = {
+        "appid": OW_API_KEY,
+        "limit": 3,
+        "lat": parsed_coords[0],
+        "lon": parsed_coords[1],
+    }
+    full_weather_url = f"{OW_API_URL}/data/3.0/onecall"
+    full_geoloc_url = f"{OW_API_URL}/geo/1.0/reverse"
+
+    # Call weather API for current weather & Geolocation API
+    weather_res = requests.get(full_weather_url, params=weather_call_params)
+    if weather_res.status_code != 200:
+        print(
+            f"[bold red]Error:[/bold red] [red]request errored with code {res.status_code}[/red]"
+        )
+        raise typer.Exit(1)
+
+    geoloc_res = requests.get(full_geoloc_url, params=geo_call_params)
+    if geoloc_res.status_code != 200:
+        print(
+            f"[bold red]Error:[/bold red] [red]request errored with code {geloc_res.status_code}[/red]"
+        )
+        raise typer.Exit(1)
+
+    # Prepare Data for Console output
+    weather_data = weather_res.json()
+    geoloc_data = geoloc_res.json()
+
+    daily_records = []
+
+    for data in weather_data["daily"]:
+        wind_gust = None
+        rain = None
+        snow = None
+        if "wind_gust" in data:
+            wind_gust = data["wind_gust"]
+        if "rain" in data:
+            rain = data["rain"]
+        if "snow" in data:
+            snow = data["snow"]
+        record = DailyWeatherRecord(
+            data["dt"],
+            data["summary"],
+            data["temp"]["min"],
+            data["temp"]["max"],
+            data["humidity"],
+            data["wind_speed"],
+            data["pop"],
+            data["weather"][0],
+            wind_gust=wind_gust,
+            rain=rain,
+            snow=snow,
+            temp_units=t_metric,
+            wind_units=w_metric,
+        )
+        daily_records.append(record)
+
+    print(
+        f"8 day weather for [green]{geoloc_data[0]["name"]}, {geoloc_data[0]["state"]}, {geoloc_data[0]["country"]}[/green]"
+    )
+
+    for record in daily_records:
+        table = Table("Measurement", "Value")
+        table.add_row("Summary", record.get_summary())
+        table.add_row("Min Temp", record.get_min_temp())
+        table.add_row("Max Temp", record.get_max_temp())
+        table.add_row("Avg Temp", record.get_avg_temp())
+        table.add_row("Humidity", record.get_humidity())
+        table.add_row("Wind Speed", record.get_wind_speed())
+        if record.has_wind_gust():
+            table.add_row("Wind Gusts", record.get_wind_gust())
+        if record.has_rain():
+            table.add_row("Rain", record.get_rain())
+        if record.has_snow():
+            table.add_row("Snow", record.get_snow())
+
+        print(f"\nReport for [bold green]{record.get_datetime()}[/bold green]")
+        console.print(table)
 
 
 if __name__ == "__main__":
