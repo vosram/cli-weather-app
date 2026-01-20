@@ -121,14 +121,24 @@ def current(
     full_geoloc_url = f"{OW_API_URL}/geo/1.0/reverse"
 
     # Call weather API for current weather & Geolocation API
-    weather_res = requests.get(full_weather_url, params=weather_call_params)
+    try:
+        weather_res = requests.get(full_weather_url, params=weather_call_params)
+        geoloc_res = requests.get(full_geoloc_url, params=geo_call_params)
+    except ConnectionError as err:
+        print("[bold red]Error: [/bold red] Connection error")
+        print(err)
+        raise typer.Exit(1)
+    except TimeoutError as err:
+        print("[bold red]Error: [/bold red] Timeout error")
+        print(err)
+        raise typer.Exit(1)
+
     if weather_res.status_code != 200:
         print(
             f"[bold red]Error:[/bold red] [red]request errored with code {res.status_code}[/red]"
         )
         raise typer.Exit(1)
 
-    geoloc_res = requests.get(full_geoloc_url, params=geo_call_params)
     if geoloc_res.status_code != 200:
         print(
             f"[bold red]Error:[/bold red] [red]request errored with code {geloc_res.status_code}[/red]"
@@ -151,7 +161,7 @@ def current(
         snow = weather_data["current"]["snow"]["1h"]
 
     if "wind_gust" in weather_data["current"]:
-        wind_gust = weather_data["current"]["wind_gust"], w_metric
+        wind_gust = weather_data["current"]["wind_gust"]
 
     w_record = WeatherRecord(
         weather_data["current"]["dt"],
@@ -249,14 +259,24 @@ def _12hours(
     full_geoloc_url = f"{OW_API_URL}/geo/1.0/reverse"
 
     # Call weather API for current weather & Geolocation API
-    weather_res = requests.get(full_weather_url, params=weather_call_params)
+    try:
+        weather_res = requests.get(full_weather_url, params=weather_call_params)
+        geoloc_res = requests.get(full_geoloc_url, params=geo_call_params)
+    except ConnectionError as err:
+        print("[bold red]Error: [/bold red] Connection error")
+        print(err)
+        raise typer.Exit(1)
+    except TimeoutError as err:
+        print("[bold red]Error: [/bold red] Timeout error")
+        print(err)
+        raise typer.Exit(1)
+
     if weather_res.status_code != 200:
         print(
             f"[bold red]Error:[/bold red] [red]request errored with code {res.status_code}[/red]"
         )
         raise typer.Exit(1)
 
-    geoloc_res = requests.get(full_geoloc_url, params=geo_call_params)
     if geoloc_res.status_code != 200:
         print(
             f"[bold red]Error:[/bold red] [red]request errored with code {geloc_res.status_code}[/red]"
@@ -392,14 +412,24 @@ def _24hours(
     full_geoloc_url = f"{OW_API_URL}/geo/1.0/reverse"
 
     # Call weather API for current weather & Geolocation API
-    weather_res = requests.get(full_weather_url, params=weather_call_params)
+    try:
+        weather_res = requests.get(full_weather_url, params=weather_call_params)
+        geoloc_res = requests.get(full_geoloc_url, params=geo_call_params)
+    except ConnectionError as err:
+        print("[bold red]Error: [/bold red] Connection error")
+        print(err)
+        raise typer.Exit(1)
+    except TimeoutError as err:
+        print("[bold red]Error: [/bold red] Timeout error")
+        print(err)
+        raise typer.Exit(1)
+
     if weather_res.status_code != 200:
         print(
             f"[bold red]Error:[/bold red] [red]request errored with code {res.status_code}[/red]"
         )
         raise typer.Exit(1)
 
-    geoloc_res = requests.get(full_geoloc_url, params=geo_call_params)
     if geoloc_res.status_code != 200:
         print(
             f"[bold red]Error:[/bold red] [red]request errored with code {geloc_res.status_code}[/red]"
@@ -535,14 +565,24 @@ def _8days(
     full_geoloc_url = f"{OW_API_URL}/geo/1.0/reverse"
 
     # Call weather API for current weather & Geolocation API
-    weather_res = requests.get(full_weather_url, params=weather_call_params)
+    try:
+        weather_res = requests.get(full_weather_url, params=weather_call_params)
+        geoloc_res = requests.get(full_geoloc_url, params=geo_call_params)
+    except ConnectionError as err:
+        print("[bold red]Error: [/bold red] Connection error")
+        print(err)
+        raise typer.Exit(1)
+    except TimeoutError as err:
+        print("[bold red]Error: [/bold red] Timeout error")
+        print(err)
+        raise typer.Exit(1)
+
     if weather_res.status_code != 200:
         print(
             f"[bold red]Error:[/bold red] [red]request errored with code {res.status_code}[/red]"
         )
         raise typer.Exit(1)
 
-    geoloc_res = requests.get(full_geoloc_url, params=geo_call_params)
     if geoloc_res.status_code != 200:
         print(
             f"[bold red]Error:[/bold red] [red]request errored with code {geloc_res.status_code}[/red]"
