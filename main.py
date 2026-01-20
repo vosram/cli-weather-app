@@ -213,6 +213,12 @@ def _12hours(
         ),
     ] = "m",
 ):
+    """
+    Gets the next 12 hour forecase for the location at COORDS.
+
+    COORDS should be formatted as '<lat>,<lon>'.
+    Latitude and Longitude can be fetched from searchcity command.
+    """
     # Interpret CLI options for query params
     if t_metric != "c" and t_metric != "f":
         print(
