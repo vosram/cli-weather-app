@@ -1,3 +1,4 @@
+from enum import Enum
 from datetime import datetime
 from lib.converters import (
     kelvin_to_c,
@@ -7,6 +8,16 @@ from lib.converters import (
     mm_to_in,
 )
 from lib.formatters import format_percipitation
+
+
+class WeatherType(Enum):
+    THUNDERSTORM = "thunderstorm"
+    DRIZZLE = "drizzle"
+    RAIN = "rain"
+    SNOW = "snow"
+    ATMOSPHERE = "atmosphere"
+    CLEAR = "clear"
+    CLOUDS = "clouds"
 
 
 class WeatherRecord:
@@ -38,14 +49,16 @@ class WeatherRecord:
         self.temp_units = temp_units
         self.wind_units = wind_units
 
-    def get_datetime(self, t_format: "hourly" | "daily" | "current"):
+    def get_datetime(self, t_format: "hourly" | "daily" | "current" | "filename"):
         match t_format:
             case "hourly":
                 return datetime.fromtimestamp(self.timestamp).strftime(
                     "%m/%d/%y %I:%M %p"
                 )
-            case "daily":
-                pass
+            case "filename":
+                return datetime.fromtimestamp(self.timestamp).strftime(
+                    "%Y-%m-%d-%H-%M-%S"
+                )
             case _:
                 return datetime.fromtimestamp(self.timestamp).strftime(
                     "%a %b %d, %Y %I:%M %p"
@@ -90,6 +103,25 @@ class WeatherRecord:
     def get_weather_condition(self):
         return f"{self.weather["main"]}: {self.weather["description"]}"
 
+    def get_weather_category(self) -> WeatherType:
+        weather_code = self.weather["id"]
+        if weather_code >= 200 and weather_code < 300:
+            return WeatherType.THUNDERSTORM
+        elif weather_code >= 300 and weather_code < 400:
+            return WeatherType.DRIZZLE
+        elif weather_code >= 500 and weather_code < 600:
+            return WeatherType.RAIN
+        elif weather_code >= 600 and weather_code < 700:
+            return WeatherType.SNOW
+        elif weather_code >= 700 and weather_code < 800:
+            return WeatherType.ATMOSPHERE
+        elif weather_code == 800:
+            return WeatherType.CLEAR
+        elif weather_code >= 801 and weather_code < 805:
+            return WeatherType.CLOUDS
+        else:
+            return WeatherType.CLEAR
+
     def has_rain(self):
         if self.rain:
             return True
@@ -98,7 +130,9 @@ class WeatherRecord:
 
     def get_rain(self):
         if self.rain:
-            return format_percipitation(self.rain)
+            if self.wind_units == "k":
+                return f"{self.rain} mm"
+            return mm_to_in(self.rain)
         else:
             return "N/A"
 
@@ -110,7 +144,9 @@ class WeatherRecord:
 
     def get_snow(self):
         if self.snow:
-            return format_percipitation(self.snow)
+            if self.wind_units == "k":
+                return f"{self.snow} mm"
+            return mm_to_in(self.snow)
         else:
             return "N/A"
 

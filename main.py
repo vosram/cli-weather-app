@@ -15,6 +15,7 @@ from lib.formatters import (
     format_percipitation,
 )
 from lib.weatherrecord import WeatherRecord, DailyWeatherRecord
+from lib.images import current_to_image
 
 load_dotenv()
 OW_API_KEY = os.environ.get("OPEN_WEATHER_MAP_API_KEY", "")
@@ -84,6 +85,15 @@ def current(
             show_default="mph",
         ),
     ] = "m",
+    to_image: Annotated[
+        bool,
+        typer.Option(
+            "--to-image",
+            "-i",
+            help="if flag present, will export an image of weather",
+            show_default="False",
+        ),
+    ] = False,
 ):
     """
     Gets current weather data for COORDS.
@@ -179,9 +189,12 @@ def current(
     )
 
     # Output of data
-    print(
-        f"Current weather in [green]{geoloc_data[0]["name"]}, {geoloc_data[0]["state"]}, {geoloc_data[0]["country"]}[/green]"
+    city, state, country = (
+        geoloc_data[0]["name"],
+        geoloc_data[0]["state"],
+        geoloc_data[0]["country"],
     )
+    print(f"Current weather in [green]{city}, {state}, {country}[/green]")
     print(f"\n{w_record.get_datetime("current")}")
     print(w_record.get_weather_condition())
     table = Table("Measurement", "Value")
@@ -196,6 +209,8 @@ def current(
     if w_record.has_snow():
         table.add_row("Snow", w_record.get_snow())
     console.print(table)
+    if to_image:
+        current_to_image(w_record, city, state, country)
 
 
 @app.command("12hours")
