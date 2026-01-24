@@ -6,24 +6,40 @@ from rich import print
 
 
 def current_to_image(record: WeatherRecord, city: str, state: str, country: str):
+    expected_files = {
+        "atmosphere": Path(os.path.join("images", "atmosphere.jpg")),
+        "clear": Path(os.path.join("images", "clear.jpg")),
+        "clouds": Path(os.path.join("images", "clouds.jpg")),
+        "drizzle": Path(os.path.join("images", "drizzle.jpg")),
+        "rain": Path(os.path.join("images", "rain.jpg")),
+        "snow": Path(os.path.join("images", "snow.jpg")),
+        "thunderstorm": Path(os.path.join("images", "thunderstorm.jpg")),
+    }
+    for file in expected_files:
+        if not os.path.exists(expected_files[file]):
+            print(
+                f"[bold red]Error: {file} does not exist. Please ensure it exists to continue[/bold red]"
+            )
+            return
     bg_path = None
+
     match (record.get_weather_category()):
         case WeatherType.THUNDERSTORM:
-            bg_path = Path(os.path.join("images", "thunderstorm.jpg"))
+            bg_path = expected_files["thunderstorm"]
         case WeatherType.DRIZZLE:
-            bg_path = Path(os.path.join("images", "drizzle.jpg"))
+            bg_path = expected_files["drizzle"]
         case WeatherType.RAIN:
-            bg_path = Path(os.path.join("images", "rain.jpg"))
+            bg_path = expected_files["rain"]
         case WeatherType.SNOW:
-            bg_path = Path(os.path.join("images", "snow.jpg"))
+            bg_path = expected_files["snow"]
         case WeatherType.ATMOSPHERE:
-            bg_path = Path(os.path.join("images", "atmosphere.jpg"))
+            bg_path = expected_files["atmosphere"]
         case WeatherType.CLEAR:
-            bg_path = Path(os.path.join("images", "clear.jpg"))
+            bg_path = expected_files["clear"]
         case WeatherType.CLOUDS:
-            bg_path = Path(os.path.join("images", "clouds.jpg"))
+            bg_path = expected_files["clouds"]
         case _:
-            bg_path = Path(os.path.join("images", "clear"))
+            bg_path = expected_files["clear"]
 
     try:
         with Image.open(bg_path) as im:

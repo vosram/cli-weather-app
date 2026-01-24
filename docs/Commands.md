@@ -50,7 +50,31 @@ The current command really only needs 1 argument, that being `coords`. This `coo
 
 `-w`, `--w-metric` is "m" for miles per hour by default but can be set to "k" for kilometers per hour. Any other value will cause an error and exit.
 
-`--to-image` is a boolean that will cause the data to be exported to a sharable image file.
+`-i`, `--to-image` is a boolean that will cause the data to be exported to a sharable image file.
+
+### Image Creation
+
+The function to create an image of the current weather data uses background images in a `images` folder within the root folder of this project. These images are not added in the repo to keep the repo light and to allow customization of the images one would like to use. To use this functionality, create the following files:
+
+- `images/atmosphere.jpg`
+- `images/clear.jpg`
+- `images/clouds.jpg`
+- `images/drizzle.jpg`
+- `images/rain.jpg`
+- `images/snow.jpg`
+- `images/thunderstorm.jpg`
+
+The images must be at least 800px by 800px. The images don't need to be 1:1 ratio, if the image is landscape or portrait, the image will be centered to fill 800px x 800px. I used images from unsplash. You can find the exact ones I used here:
+
+- [atmosphere](https://unsplash.com/photos/silhouette-of-pine-trees-photo-BS-Uxe8wU5Y)
+- [clear sky](https://unsplash.com/photos/white-clouds--qGKIX1Vxtk)
+- [clouds](https://unsplash.com/photos/white-clouds-under-blue-sky-during-daytime-gJILnne_HFg)
+- [drizzle](https://unsplash.com/photos/macro-photography-of-water-droplets-on-clear-glass-MU93ZoQPNB8)
+- [rain](https://unsplash.com/photos/rain-drops-on-window-glass-HCDugQDdtfc)
+- [snow](https://unsplash.com/photos/focused-photo-of-a-snow-flake-5AiWn2U10cw)
+- [thunderstorm](https://unsplash.com/photos/lightning-strike-on-cloudy-sky-during-night-time-ESL1rIs9j48)
+
+If these images are not available, then the function will return early. Make sure all the image files are both jpg files and named exactly as listed above.
 
 ## 12hours Command
 
