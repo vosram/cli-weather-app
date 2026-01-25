@@ -625,6 +625,7 @@ def _8days(
             data["summary"],
             data["temp"]["min"],
             data["temp"]["max"],
+            data["feels_like"],
             data["humidity"],
             data["wind_speed"],
             data["pop"],
@@ -646,7 +647,8 @@ def _8days(
         table.add_row("Summary", record.get_summary())
         table.add_row("Min Temp", record.get_min_temp())
         table.add_row("Max Temp", record.get_max_temp())
-        table.add_row("Avg Temp", record.get_avg_temp())
+        table.add_row("Avg Temp", record.get_temp())
+        table.add_row("Avg Feels Like", record.get_feels_like())
         table.add_row("Humidity", record.get_humidity())
         table.add_row("Wind Speed", record.get_wind_speed())
         if record.has_wind_gust():
@@ -656,7 +658,7 @@ def _8days(
         if record.has_snow():
             table.add_row("Snow", record.get_snow())
 
-        print(f"\nReport for [bold green]{record.get_datetime()}[/bold green]")
+        print(f"\nReport for [bold green]{record.get_datetime("daily")}[/bold green]")
         console.print(table)
 
 

@@ -59,6 +59,8 @@ class WeatherRecord:
                 return datetime.fromtimestamp(self.timestamp).strftime(
                     "%Y-%m-%d-%H-%M-%S"
                 )
+            case "daily":
+                return datetime.fromtimestamp(self.timestamp).strftime("%a %b %d %Y")
             case _:
                 return datetime.fromtimestamp(self.timestamp).strftime(
                     "%a %b %d, %Y %I:%M %p"
@@ -72,9 +74,9 @@ class WeatherRecord:
 
     def get_feels_like(self):
         if self.temp_units == "c":
-            return kelvin_to_c(self.temp)
+            return kelvin_to_c(self.feels_like)
         else:
-            return kelvin_to_f(self.temp)
+            return kelvin_to_f(self.feels_like)
 
     def get_humidity(self):
         return f"{self.humidity}%"
@@ -165,13 +167,14 @@ class WeatherRecord:
             return "N/A"
 
 
-class DailyWeatherRecord:
+class DailyWeatherRecord(WeatherRecord):
     def __init__(
         self,
         timestamp: int,
         summary: str,
         min_temp: float,
         max_temp: float,
+        feels_like,
         humidity: int,
         wind_speed: float,
         pop: float,
@@ -182,29 +185,31 @@ class DailyWeatherRecord:
         temp_units: str = "f",
         wind_units: str = "m",
     ):
-        self.timestamp = timestamp
+        avg_temp = (max_temp + min_temp) / 2
+        avg_feels_like = (
+            feels_like["day"]
+            + feels_like["night"]
+            + feels_like["eve"]
+            + feels_like["morn"]
+        ) / 4
+
+        super().__init__(
+            timestamp,
+            avg_temp,
+            avg_feels_like,
+            humidity,
+            wind_speed,
+            weather,
+            wind_gust=wind_gust,
+            rain=rain,
+            snow=snow,
+            pop=pop,
+            temp_units=temp_units,
+            wind_units=wind_units,
+        )
         self.summary = summary
         self.min_temp = min_temp
         self.max_temp = max_temp
-        self.humidity = humidity
-        self.wind_speed = wind_speed
-        self.pop = pop
-        self.weather = weather
-        self.wind_gust = wind_gust
-        self.rain = rain
-        self.snow = snow
-        self.temp_units = temp_units
-        self.wind_units = wind_units
-
-    def get_datetime(self):
-        return datetime.fromtimestamp(self.timestamp).strftime("%a %b %d %Y")
-
-    def get_avg_temp(self):
-        avg_temp = (self.max_temp + self.min_temp) / 2
-        if self.temp_units == "c":
-            return kelvin_to_c(avg_temp)
-        else:
-            return kelvin_to_f(avg_temp)
 
     def get_min_temp(self):
         if self.temp_units == "c":
@@ -218,74 +223,5 @@ class DailyWeatherRecord:
         else:
             return kelvin_to_f(self.max_temp)
 
-    def get_humidity(self):
-        return f"{self.humidity}%"
-
-    def get_wind_speed(self):
-        if self.wind_units == "k":
-            return wind_speed_to_kmph(self.wind_speed)
-        else:
-            return wind_speed_to_mph(self.wind_speed)
-
-    def has_wind_gust(self):
-        if self.wind_gust:
-            return True
-        else:
-            return False
-
-    def get_wind_gust(self):
-        if self.wind_gust is None:
-            return "N/A"
-
-        if self.wind_units == "k":
-            return wind_speed_to_kmph(self.wind_gust)
-        else:
-            return wind_speed_to_mph(self.wind_gust)
-
     def get_summary(self):
         return self.summary
-
-    def get_weather_condition(self):
-        return f"{self.weather["main"]}: {self.weather["description"]}"
-
-    def has_rain(self):
-        if self.rain:
-            return True
-        else:
-            return False
-
-    def get_rain(self):
-        if self.rain:
-            if self.wind_units == "k":
-                return f"{self.rain} mm"
-            return mm_to_in(self.rain)
-        else:
-            return "N/A"
-
-    def has_snow(self):
-        if self.snow:
-            return True
-        else:
-            return False
-
-    def get_snow(self):
-        if self.snow:
-            if self.wind_units == "k":
-                return f"{self.snow} mm"
-            return mm_to_in(self.snow)
-        else:
-            return "N/A"
-
-    def has_pop(self):
-        if self.pop:
-            return True
-        else:
-            return False
-
-    def get_pop(self):
-        # probability of percipitation frm 0 to 1
-        if self.pop:
-            result = self.pop * 100
-            return "{:.2f}%".format(result)
-        else:
-            return "N/A"
