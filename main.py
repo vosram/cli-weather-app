@@ -24,6 +24,19 @@ app = typer.Typer()
 console = Console()
 
 
+def check_env_vars():
+    if OW_API_URL == "":
+        print(
+            "[bold red]WEATHER_API_URL is not set in the enviroment variables[/bold red]"
+        )
+        raise typer.Exit(1)
+    if OW_API_KEY == "":
+        print(
+            "[bold red]OPEN_WEATHER_MAP_API_KEY is not set in the enviroment variables[/bold red]"
+        )
+        raise typer.Exit(1)
+
+
 @app.command()
 def main(name: str):
     """
@@ -44,10 +57,26 @@ def SearchCity(
     Copy the values in blue and paste into other commands.
     """
     print(f"You are searching for [bold green]{name}[/bold green]")
+
+    check_env_vars()
+
     param_payload = {"q": name, "limit": "5", "appid": OW_API_KEY}
     full_url = f"{OW_API_URL}/geo/1.0/direct"
 
-    res = requests.get(full_url, params=param_payload)
+    try:
+        res = requests.get(full_url, params=param_payload)
+    except ConnectionError as err:
+        print("[bold red]Error: [/bold red] Connection error")
+        print(err)
+        raise typer.Exit(1)
+    except TimeoutError as err:
+        print("[bold red]Error: [/bold red] Timeout error")
+        print(err)
+        raise typer.Exit(1)
+    except Exception as err:
+        print("[bold red]Error: [/bold red]")
+        print(err)
+        raise typer.Exit(1)
 
     if res.status_code != 200:
         print(f"[red]request errored with code {res.status_code}[/red]")
@@ -114,6 +143,8 @@ def current(
         )
         raise typer.Exit(1)
 
+    check_env_vars()
+
     parsed_coords = coords.split(",")
     weather_call_params = {
         "appid": OW_API_KEY,
@@ -142,16 +173,20 @@ def current(
         print("[bold red]Error: [/bold red] Timeout error")
         print(err)
         raise typer.Exit(1)
+    except Exception as err:
+        print("[bold red]Error: [/bold red]")
+        print(err)
+        raise typer.Exit(1)
 
     if weather_res.status_code != 200:
         print(
-            f"[bold red]Error:[/bold red] [red]request errored with code {res.status_code}[/red]"
+            f"[bold red]Error:[/bold red] [red]request errored with code {weather_res.status_code}[/red]"
         )
         raise typer.Exit(1)
 
     if geoloc_res.status_code != 200:
         print(
-            f"[bold red]Error:[/bold red] [red]request errored with code {geloc_res.status_code}[/red]"
+            f"[bold red]Error:[/bold red] [red]request errored with code {geoloc_res.status_code}[/red]"
         )
         raise typer.Exit(1)
 
@@ -257,6 +292,8 @@ def _12hours(
         )
         raise typer.Exit(1)
 
+    check_env_vars()
+
     parsed_coords = coords.split(",")
     weather_call_params = {
         "appid": OW_API_KEY,
@@ -285,16 +322,20 @@ def _12hours(
         print("[bold red]Error: [/bold red] Timeout error")
         print(err)
         raise typer.Exit(1)
+    except Exception as err:
+        print("[bold red]Error: [/bold red]")
+        print(err)
+        raise typer.Exit(1)
 
     if weather_res.status_code != 200:
         print(
-            f"[bold red]Error:[/bold red] [red]request errored with code {res.status_code}[/red]"
+            f"[bold red]Error:[/bold red] [red]request errored with code {weather_res.status_code}[/red]"
         )
         raise typer.Exit(1)
 
     if geoloc_res.status_code != 200:
         print(
-            f"[bold red]Error:[/bold red] [red]request errored with code {geloc_res.status_code}[/red]"
+            f"[bold red]Error:[/bold red] [red]request errored with code {geoloc_res.status_code}[/red]"
         )
         raise typer.Exit(1)
 
@@ -410,6 +451,8 @@ def _24hours(
         )
         raise typer.Exit(1)
 
+    check_env_vars()
+
     parsed_coords = coords.split(",")
     weather_call_params = {
         "appid": OW_API_KEY,
@@ -438,16 +481,20 @@ def _24hours(
         print("[bold red]Error: [/bold red] Timeout error")
         print(err)
         raise typer.Exit(1)
+    except Exception as err:
+        print("[bold red]Error: [/bold red]")
+        print(err)
+        raise typer.Exit(1)
 
     if weather_res.status_code != 200:
         print(
-            f"[bold red]Error:[/bold red] [red]request errored with code {res.status_code}[/red]"
+            f"[bold red]Error:[/bold red] [red]request errored with code {weather_res.status_code}[/red]"
         )
         raise typer.Exit(1)
 
     if geoloc_res.status_code != 200:
         print(
-            f"[bold red]Error:[/bold red] [red]request errored with code {geloc_res.status_code}[/red]"
+            f"[bold red]Error:[/bold red] [red]request errored with code {geoloc_res.status_code}[/red]"
         )
         raise typer.Exit(1)
 
@@ -563,6 +610,8 @@ def _8days(
         )
         raise typer.Exit(1)
 
+    check_env_vars()
+
     parsed_coords = coords.split(",")
     weather_call_params = {
         "appid": OW_API_KEY,
@@ -591,16 +640,20 @@ def _8days(
         print("[bold red]Error: [/bold red] Timeout error")
         print(err)
         raise typer.Exit(1)
+    except Exception as err:
+        print("[bold red]Error: [/bold red]")
+        print(err)
+        raise typer.Exit(1)
 
     if weather_res.status_code != 200:
         print(
-            f"[bold red]Error:[/bold red] [red]request errored with code {res.status_code}[/red]"
+            f"[bold red]Error:[/bold red] [red]request errored with code {weather_res.status_code}[/red]"
         )
         raise typer.Exit(1)
 
     if geoloc_res.status_code != 200:
         print(
-            f"[bold red]Error:[/bold red] [red]request errored with code {geloc_res.status_code}[/red]"
+            f"[bold red]Error:[/bold red] [red]request errored with code {geoloc_res.status_code}[/red]"
         )
         raise typer.Exit(1)
 
