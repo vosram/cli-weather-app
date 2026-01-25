@@ -15,6 +15,7 @@ from lib.formatters import (
     format_percipitation,
 )
 from lib.weatherrecord import WeatherRecord, DailyWeatherRecord
+from lib.alerts import WeatherAlert
 from lib.images import current_to_image
 
 load_dotenv()
@@ -148,7 +149,7 @@ def current(
     parsed_coords = coords.split(",")
     weather_call_params = {
         "appid": OW_API_KEY,
-        "exclude": "minutely,hourly,daily,alerts",
+        "exclude": "minutely,hourly,daily",
         "lat": parsed_coords[0],
         "lon": parsed_coords[1],
     }
@@ -208,6 +209,18 @@ def current(
     if "wind_gust" in weather_data["current"]:
         wind_gust = weather_data["current"]["wind_gust"]
 
+    alerts = []
+    if "alerts" in weather_data:
+        for alert_data in weather_data["alerts"]:
+            alert_record = WeatherAlert(
+                alert_data["sender_name"],
+                alert_data["event"],
+                alert_data["start"],
+                alert_data["end"],
+                alert_data["description"],
+            )
+            alerts.append(alert_record)
+
     w_record = WeatherRecord(
         weather_data["current"]["dt"],
         weather_data["current"]["temp"],
@@ -246,6 +259,14 @@ def current(
     console.print(table)
     if to_image:
         current_to_image(w_record, city, state, country)
+
+    for alert in alerts:
+        print(f"\n\n[bold red]Alert from {alert.get_sender()}[/bold red]")
+        print(f"[yellow]{alert.get_event()}[/yellow]")
+        print(
+            f"From [green]{alert.get_start()}[/green] until [green]{alert.get_end()}[/green]"
+        )
+        print(alert.get_description())
 
 
 @app.command("12hours")
@@ -297,7 +318,7 @@ def _12hours(
     parsed_coords = coords.split(",")
     weather_call_params = {
         "appid": OW_API_KEY,
-        "exclude": "current,minutely,daily,alerts",
+        "exclude": "current,minutely,daily",
         "lat": parsed_coords[0],
         "lon": parsed_coords[1],
     }
@@ -375,6 +396,18 @@ def _12hours(
         )
         hourly_records.append(record)
 
+    alerts = []
+    if "alerts" in weather_data:
+        for alert_data in weather_data["alerts"]:
+            alert_record = WeatherAlert(
+                alert_data["sender_name"],
+                alert_data["event"],
+                alert_data["start"],
+                alert_data["end"],
+                alert_data["description"],
+            )
+            alerts.append(alert_record)
+
     print(
         f"12 hour weather for [green]{geoloc_data[0]["name"]}, {geoloc_data[0]["state"]}, {geoloc_data[0]["country"]}[/green]"
     )
@@ -405,6 +438,14 @@ def _12hours(
             record.get_pop(),
         )
     console.print(table)
+
+    for alert in alerts:
+        print(f"\n\n[bold red]Alert from {alert.get_sender()}[/bold red]")
+        print(f"[yellow]{alert.get_event()}[/yellow]")
+        print(
+            f"From [green]{alert.get_start()}[/green] until [green]{alert.get_end()}[/green]"
+        )
+        print(alert.get_description())
 
 
 @app.command("24hours")
@@ -456,7 +497,7 @@ def _24hours(
     parsed_coords = coords.split(",")
     weather_call_params = {
         "appid": OW_API_KEY,
-        "exclude": "current,minutely,daily,alerts",
+        "exclude": "current,minutely,daily",
         "lat": parsed_coords[0],
         "lon": parsed_coords[1],
     }
@@ -534,6 +575,18 @@ def _24hours(
         )
         hourly_records.append(record)
 
+    alerts = []
+    if "alerts" in weather_data:
+        for alert_data in weather_data["alerts"]:
+            alert_record = WeatherAlert(
+                alert_data["sender_name"],
+                alert_data["event"],
+                alert_data["start"],
+                alert_data["end"],
+                alert_data["description"],
+            )
+            alerts.append(alert_record)
+
     print(
         f"24 hour weather for [green]{geoloc_data[0]["name"]}, {geoloc_data[0]["state"]}, {geoloc_data[0]["country"]}[/green]"
     )
@@ -564,6 +617,14 @@ def _24hours(
             record.get_pop(),
         )
     console.print(table)
+
+    for alert in alerts:
+        print(f"\n\n[bold red]Alert from {alert.get_sender()}[/bold red]")
+        print(f"[yellow]{alert.get_event()}[/yellow]")
+        print(
+            f"From [green]{alert.get_start()}[/green] until [green]{alert.get_end()}[/green]"
+        )
+        print(alert.get_description())
 
 
 @app.command("8days")
@@ -615,7 +676,7 @@ def _8days(
     parsed_coords = coords.split(",")
     weather_call_params = {
         "appid": OW_API_KEY,
-        "exclude": "current,minutely,hourly,alerts",
+        "exclude": "current,minutely,hourly",
         "lat": parsed_coords[0],
         "lon": parsed_coords[1],
     }
@@ -691,6 +752,18 @@ def _8days(
         )
         daily_records.append(record)
 
+    alerts = []
+    if "alerts" in weather_data:
+        for alert_data in weather_data["alerts"]:
+            alert_record = WeatherAlert(
+                alert_data["sender_name"],
+                alert_data["event"],
+                alert_data["start"],
+                alert_data["end"],
+                alert_data["description"],
+            )
+            alerts.append(alert_record)
+
     print(
         f"8 day weather for [green]{geoloc_data[0]["name"]}, {geoloc_data[0]["state"]}, {geoloc_data[0]["country"]}[/green]"
     )
@@ -713,6 +786,14 @@ def _8days(
 
         print(f"\nReport for [bold green]{record.get_datetime("daily")}[/bold green]")
         console.print(table)
+
+    for alert in alerts:
+        print(f"\n\n[bold red]Alert from {alert.get_sender()}[/bold red]")
+        print(f"[yellow]{alert.get_event()}[/yellow]")
+        print(
+            f"From [green]{alert.get_start()}[/green] until [green]{alert.get_end()}[/green]"
+        )
+        print(alert.get_description())
 
 
 if __name__ == "__main__":

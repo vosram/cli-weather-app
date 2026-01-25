@@ -21,8 +21,17 @@ def format_wind_speed(speed: float, unit: "m" | "k") -> str:
         return wind_speed_to_mph(speed)
 
 
-def timestamp_to_fmt_text(timestamp: int) -> str:
-    return datetime.fromtimestamp(timestamp).strftime("%a %b %d, %Y %I:%M %p")
+def timestamp_to_fmt_text(timestamp: int, t_format: str) -> str:
+    match t_format:
+        case "hourly":
+            return datetime.fromtimestamp(timestamp).strftime("%m/%d/%y %I:%M %p")
+        case "filename":
+            return datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d-%H-%M-%S")
+        case "daily":
+            return datetime.fromtimestamp(timestamp).strftime("%a %b %d %Y")
+        case _:
+            return datetime.fromtimestamp(timestamp).strftime("%a %b %d, %Y %I:%M %p")
+    # return datetime.fromtimestamp(timestamp).strftime("%a %b %d, %Y %I:%M %p")
 
 
 def format_humidity(val: int) -> str:

@@ -7,7 +7,7 @@ from lib.converters import (
     wind_speed_to_mph,
     mm_to_in,
 )
-from lib.formatters import format_percipitation
+from lib.formatters import format_percipitation, timestamp_to_fmt_text
 
 
 class WeatherType(Enum):
@@ -52,19 +52,13 @@ class WeatherRecord:
     def get_datetime(self, t_format: "hourly" | "daily" | "current" | "filename"):
         match t_format:
             case "hourly":
-                return datetime.fromtimestamp(self.timestamp).strftime(
-                    "%m/%d/%y %I:%M %p"
-                )
+                return timestamp_to_fmt_text(self.timestamp, "hourly")
             case "filename":
-                return datetime.fromtimestamp(self.timestamp).strftime(
-                    "%Y-%m-%d-%H-%M-%S"
-                )
+                return timestamp_to_fmt_text(self.timestamp, "filename")
             case "daily":
-                return datetime.fromtimestamp(self.timestamp).strftime("%a %b %d %Y")
-            case _:
-                return datetime.fromtimestamp(self.timestamp).strftime(
-                    "%a %b %d, %Y %I:%M %p"
-                )
+                return timestamp_to_fmt_text(self.timestamp, "daily")
+            case "generic" | "current" | _:
+                return timestamp_to_fmt_text(self.timestamp, "generic")
 
     def get_temp(self):
         if self.temp_units == "c":
