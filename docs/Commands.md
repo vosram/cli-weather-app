@@ -14,11 +14,11 @@ uv run main.py 12hour -tm celcius --to-image 12345
 
 Here is a complete list of commands available
 
-- CitySearch
-- Current
-- 12Hours
-- 24Hours
-- 8Days
+- searchcity
+- current
+- 12hours
+- 24hours
+- 8days
 
 ## SearchCity
 
