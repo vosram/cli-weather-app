@@ -41,7 +41,10 @@ def check_env_vars():
 @app.command()
 def SearchCity(
     name: Annotated[
-        str, typer.Argument(help="<city name>,<country code> ie: 'San Antonio,US'")
+        str,
+        typer.Argument(
+            help="<city name>,<state code>,<country code> ie: 'San Antonio,TX,US'"
+        ),
     ],
 ):
     """
@@ -112,7 +115,7 @@ def current(
         typer.Option(
             "--to-image",
             "-i",
-            help="if flag present, will export an image of weather",
+            help="if flag present, will export an image of weather to downloads folder",
             show_default="False",
         ),
     ] = False,
