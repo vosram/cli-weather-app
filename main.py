@@ -39,14 +39,6 @@ def check_env_vars():
 
 
 @app.command()
-def main(name: str):
-    """
-    Say hello to NAME
-    """
-    print(f"Hello {name}")
-
-
-@app.command()
 def SearchCity(
     name: Annotated[
         str, typer.Argument(help="<city name>,<country code> ie: 'San Antonio,US'")
