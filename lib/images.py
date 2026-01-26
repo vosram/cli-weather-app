@@ -1,7 +1,7 @@
 from lib.weatherrecord import WeatherRecord, WeatherType
 from pathlib import Path
 import os
-from PIL import Image, ImageOps, ImageDraw, ImageFont
+from PIL import Image, ImageOps, ImageDraw
 from rich import print
 
 

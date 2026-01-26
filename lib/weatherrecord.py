@@ -7,7 +7,7 @@ from lib.converters import (
     wind_speed_to_mph,
     mm_to_in,
 )
-from lib.formatters import format_percipitation, timestamp_to_fmt_text
+from lib.formatters import timestamp_to_fmt_text
 
 
 class WeatherType(Enum):

@@ -6,14 +6,6 @@ from rich.console import Console
 import os
 from dotenv import load_dotenv
 import requests
-from lib.formatters import (
-    kelvin_to_formatted,
-    timestamp_to_fmt_text,
-    format_humidity,
-    format_wind_speed,
-    format_weather_desc,
-    format_percipitation,
-)
 from lib.weatherrecord import WeatherRecord, DailyWeatherRecord
 from lib.alerts import WeatherAlert
 from lib.images import current_to_image
