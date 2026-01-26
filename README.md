@@ -6,7 +6,7 @@ This app gets weather data from [openweathermap.org One Call API 3.0](https://op
 
 ## Set Up
 
-The next few sections will help you prepare the project locally to use it as intended.
+This project uses [uv](https://docs.astral.sh/uv/getting-started/installation/) as the python package and project manager. Install it first then continue with this setup. All dependencies and virtual env will be setup when you first run `uv run main.py`. If you wish to do this manually, then run `uv sync` first and that will do the same thing before running any python script. The next few sections will help you prepare the project locally to use it as intended.
 
 ### Env File
 
@@ -65,6 +65,7 @@ uv run main.py current -t c -i 30.2711286,-97.7436995
 ```
 
 ```text
+---Response---
 Current weather in Austin, Texas, US
 
 Sun Jan 25, 2026 11:42 AM
@@ -95,4 +96,4 @@ The image exported to your Downloads folder would look like this:
 - [x] Implement 24hour command
 - [x] Implement 8days command
 - [x] Implement Image Creation
-- [ ] Add alerts to commands
+- [x] Add alerts to commands
